@@ -1,11 +1,19 @@
 import java.util.List;
 import java.util.Scanner;
 
+/**
+ * Console user interface for the Smart Library application.
+ * This class handles menus, input validation, and output formatting while the
+ * library logic stays inside SmartLibrary.
+ */
 public class Main {
     private static final Scanner SCANNER = new Scanner(System.in);
     private static final LibraryADT LIBRARY = new SmartLibrary();
     private static final UserStore USER_STORE = new UserStore();
 
+    /**
+     * User roles are derived from the first letter of the registered user ID.
+     */
     private enum UserRole {
         ADMIN,
         STUDENT
@@ -30,6 +38,9 @@ public class Main {
         }
     }
 
+    /**
+     * Prints the first menu shown before a user logs in.
+     */
     private static void printEntryMenu() {
         System.out.println();
         System.out.println("===== Smart Library =====");
@@ -41,6 +52,9 @@ public class Main {
         System.out.print("Enter your choice: ");
     }
 
+    /**
+     * Authenticates an existing user ID and opens the matching role menu.
+     */
     private static void login() {
         System.out.println();
         System.out.println("===== Login Page =====");
@@ -69,6 +83,9 @@ public class Main {
         }
     }
 
+    /**
+     * Registers either an admin or student account based on the ID prefix.
+     */
     private static void registerUser() {
         System.out.println();
         System.out.println("===== Register Page =====");
@@ -98,6 +115,9 @@ public class Main {
         }
     }
 
+    /**
+     * Converts the registered user ID prefix into a menu role.
+     */
     private static UserRole identifyRole(User user) {
         if (user.getUserId().startsWith("A")) {
             return UserRole.ADMIN;
@@ -110,6 +130,9 @@ public class Main {
         return null;
     }
 
+    /**
+     * Keeps showing admin options until the admin chooses to log out.
+     */
     private static void runAdminMenu(String adminId) {
         boolean loggedIn = true;
 
@@ -148,6 +171,9 @@ public class Main {
         System.out.print("Enter your choice: ");
     }
 
+    /**
+     * Keeps showing student options until the student chooses to log out.
+     */
     private static void runStudentMenu(String studentId) {
         boolean loggedIn = true;
 
@@ -184,6 +210,10 @@ public class Main {
         System.out.print("Enter your choice: ");
     }
 
+    /**
+     * Reads a numeric menu choice. Invalid numbers are returned as -1 so each
+     * menu can handle the error in its default switch branch.
+     */
     private static int readMenuChoice() {
         String input = SCANNER.nextLine().trim();
 
@@ -194,6 +224,9 @@ public class Main {
         }
     }
 
+    /**
+     * Collects book details from the admin and sends them to the library layer.
+     */
     private static void addBook() {
         Long isbn = readPositiveIsbn("Enter ISBN: ");
         if (isbn == null) {
@@ -367,6 +400,9 @@ public class Main {
         printBooks(matches);
     }
 
+    /**
+     * Prints book records in a table whose column widths match the content.
+     */
     private static void printBooks(List<Book> books) {
         int noWidth = Math.max(2, String.valueOf(books.size()).length());
         int isbnWidth = "ISBN".length();
@@ -379,6 +415,8 @@ public class Main {
             authorWidth = Math.max(authorWidth, book.getAuthor().length());
         }
 
+        // Build the divider from the same widths so long titles do not break
+        // the table layout.
         printBookDivider(noWidth, isbnWidth, titleWidth, authorWidth);
         System.out.printf("| %-" + noWidth + "s | %-" + isbnWidth + "s | %-" + titleWidth + "s | %-" + authorWidth + "s |%n",
                 "No", "ISBN", "Title", "Author");
@@ -401,6 +439,9 @@ public class Main {
                 + "-+");
     }
 
+    /**
+     * Prints loan records in a table with dynamic column widths.
+     */
     private static void printLoanRecords(List<LoanRecord> loanRecords) {
         int noWidth = Math.max(2, String.valueOf(loanRecords.size()).length());
         int isbnWidth = "ISBN".length();
@@ -446,6 +487,9 @@ public class Main {
                 + "-+");
     }
 
+    /**
+     * Reads an ISBN and rejects blank, non-numeric, or non-positive values.
+     */
     private static Long readPositiveIsbn(String prompt) {
         System.out.print(prompt);
         String input = SCANNER.nextLine().trim();
@@ -463,6 +507,9 @@ public class Main {
         }
     }
 
+    /**
+     * Reads a required text field and returns null when the user leaves it blank.
+     */
     private static String readRequiredText(String prompt) {
         System.out.print(prompt);
         String input = SCANNER.nextLine().trim();

@@ -6,6 +6,10 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Manages registered users and persists them to a simple text file.
+ * User IDs starting with A are admins, while IDs starting with S are students.
+ */
 public class UserStore {
     private static final Path USER_FILE = Path.of("user_info.txt");
     private static final String USERS_HEADER = "[USERS]";
@@ -14,6 +18,9 @@ public class UserStore {
 
     private final Map<String, User> users;
 
+    /**
+     * Loads saved users and creates default accounts when the file is empty.
+     */
     public UserStore() {
         users = new LinkedHashMap<>();
         loadUsers();
@@ -25,6 +32,9 @@ public class UserStore {
         }
     }
 
+    /**
+     * Finds a user by ID after normalizing the input.
+     */
     public User findUser(String userId) {
         if (userId == null) {
             return null;
@@ -33,6 +43,9 @@ public class UserStore {
         return users.get(normalizeUserId(userId));
     }
 
+    /**
+     * Registers a new user if the ID format is valid and unused.
+     */
     public boolean registerUser(String userId, String name) {
         String normalizedUserId = normalizeUserId(userId);
 
@@ -45,6 +58,9 @@ public class UserStore {
         return true;
     }
 
+    /**
+     * Accepts only admin IDs beginning with A and student IDs beginning with S.
+     */
     public boolean isValidUserId(String userId) {
         if (userId == null || userId.isBlank()) {
             return false;
@@ -54,6 +70,9 @@ public class UserStore {
         return normalizedUserId.startsWith("A") || normalizedUserId.startsWith("S");
     }
 
+    /**
+     * Converts the first letter of the user ID into the stored role name.
+     */
     public String getRoleFromUserId(String userId) {
         String normalizedUserId = normalizeUserId(userId);
 
@@ -68,6 +87,9 @@ public class UserStore {
         return "";
     }
 
+    /**
+     * Reads saved users from the [USERS] section of the user file.
+     */
     private void loadUsers() {
         if (!Files.exists(USER_FILE)) {
             return;
@@ -101,6 +123,9 @@ public class UserStore {
         }
     }
 
+    /**
+     * Writes all current users back to the user file.
+     */
     private void saveUsers() {
         List<String> lines = new ArrayList<>();
         lines.add(USERS_HEADER);
@@ -116,6 +141,9 @@ public class UserStore {
         }
     }
 
+    /**
+     * Parses one saved user row into a User object.
+     */
     private User parseUser(String line) {
         List<String> parts = splitLine(line);
 
@@ -134,6 +162,9 @@ public class UserStore {
         return new User(userId, name, role);
     }
 
+    /**
+     * Formats one user as a pipe-delimited row.
+     */
     private String formatUser(User user) {
         return escape(user.getUserId()) + "|" + escape(user.getName()) + "|" + escape(user.getRole());
     }
@@ -142,6 +173,9 @@ public class UserStore {
         return userId.trim().toUpperCase();
     }
 
+    /**
+     * Splits pipe-delimited rows while respecting escaped pipe characters.
+     */
     private List<String> splitLine(String line) {
         List<String> parts = new ArrayList<>();
         StringBuilder current = new StringBuilder();
@@ -171,6 +205,9 @@ public class UserStore {
         return parts;
     }
 
+    /**
+     * Escapes characters that would otherwise break the pipe-delimited file.
+     */
     private String escape(String value) {
         return value.replace("\\", "\\\\").replace("|", "\\|");
     }

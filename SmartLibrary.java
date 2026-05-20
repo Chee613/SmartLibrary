@@ -9,7 +9,14 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
+/**
+ * Main library service that implements the required library operations.
+ * Available books are stored in a BST, while each student's loans are stored in
+ * a stack so recent borrowing activity appears first.
+ */
 public class SmartLibrary implements LibraryADT {
+    // Data is stored in simple text files so the console program can persist
+    // books and loans without needing a database.
     private static final Path DATA_FILE = Path.of("smart_library_data.txt");
     private static final String CATALOGUE_HEADER = "[CATALOGUE]";
     private static final String LOANS_HEADER = "[LOANS]";
@@ -20,6 +27,9 @@ public class SmartLibrary implements LibraryADT {
     private final BookBST catalogue;
     private final Map<String, BorrowHistoryStack> borrowHistories;
 
+    /**
+     * Loads existing saved data when the application starts.
+     */
     public SmartLibrary() {
         catalogue = new BookBST();
         borrowHistories = new LinkedHashMap<>();
@@ -63,6 +73,8 @@ public class SmartLibrary implements LibraryADT {
             return null;
         }
 
+        // Borrowed books are removed from the available catalogue until they are
+        // returned by the same student.
         catalogue.deleteByIsbn(isbn);
 
         LocalDate borrowDate = LocalDate.now();
@@ -96,6 +108,8 @@ public class SmartLibrary implements LibraryADT {
             return null;
         }
 
+        // Returning restores the same book object to the available catalogue and
+        // keeps the loan record for the student's history.
         activeLoan.markReturned();
         catalogue.insert(activeLoan.getBook());
         saveToFile();
@@ -174,6 +188,9 @@ public class SmartLibrary implements LibraryADT {
         return isbn > 0 && title != null && !title.isBlank() && author != null && !author.isBlank();
     }
 
+    /**
+     * Normalizes student IDs before storing or searching loan histories.
+     */
     private String normalizeStudentId(String studentId) {
         if (studentId == null || studentId.isBlank()) {
             return null;
@@ -186,6 +203,9 @@ public class SmartLibrary implements LibraryADT {
         return borrowHistories.computeIfAbsent(studentId, key -> new BorrowHistoryStack());
     }
 
+    /**
+     * Reads the saved catalogue and loan sections from the data file.
+     */
     private void loadFromFile() {
         if (!Files.exists(DATA_FILE)) {
             return;
@@ -197,6 +217,8 @@ public class SmartLibrary implements LibraryADT {
             String section = "";
 
             for (String line : lines) {
+                // Section headers decide whether the next lines are books,
+                // modern loan records, or old loan-history records.
                 if (line.isBlank()) {
                     continue;
                 }
@@ -230,17 +252,24 @@ public class SmartLibrary implements LibraryADT {
         }
     }
 
+    /**
+     * Restores stack order after reading loan records from the file.
+     */
     private void loadHistoryStacks(Map<String, List<LoanRecord>> loadedLoans) {
         for (Map.Entry<String, List<LoanRecord>> entry : loadedLoans.entrySet()) {
             BorrowHistoryStack historyStack = getHistoryStack(entry.getKey());
             List<LoanRecord> loanRecords = entry.getValue();
 
+            // Push in reverse order because each push places the record on top.
             for (int index = loanRecords.size() - 1; index >= 0; index--) {
                 historyStack.push(loanRecords.get(index));
             }
         }
     }
 
+    /**
+     * Writes the current catalogue and all loan histories back to the data file.
+     */
     private void saveToFile() {
         List<String> lines = new ArrayList<>();
         lines.add(CATALOGUE_HEADER);
@@ -265,10 +294,16 @@ public class SmartLibrary implements LibraryADT {
         }
     }
 
+    /**
+     * Formats one available book as a pipe-delimited row.
+     */
     private String formatBook(Book book) {
         return book.getIsbn() + "|" + escape(book.getTitle()) + "|" + escape(book.getAuthor());
     }
 
+    /**
+     * Formats one loan record as a pipe-delimited row.
+     */
     private String formatLoanRecord(LoanRecord loanRecord) {
         Book book = loanRecord.getBook();
         return escape(loanRecord.getStudentId())
@@ -280,6 +315,9 @@ public class SmartLibrary implements LibraryADT {
                 + "|" + loanRecord.isReturned();
     }
 
+    /**
+     * Parses one saved catalogue row into a Book object.
+     */
     private Book parseBook(String line) {
         List<String> parts = splitLine(line);
 
@@ -302,6 +340,9 @@ public class SmartLibrary implements LibraryADT {
         }
     }
 
+    /**
+     * Parses one saved loan row into a LoanRecord object.
+     */
     private LoanRecord parseLoanRecord(String line) {
         List<String> parts = splitLine(line);
 
@@ -328,6 +369,9 @@ public class SmartLibrary implements LibraryADT {
         }
     }
 
+    /**
+     * Converts older borrow-history rows into modern loan records.
+     */
     private LoanRecord parseLegacyLoanRecord(String line) {
         Book book = parseBook(line);
         if (book == null) {
@@ -338,6 +382,9 @@ public class SmartLibrary implements LibraryADT {
         return new LoanRecord(LEGACY_STUDENT_ID, book, borrowDate, borrowDate.plusDays(LOAN_DAYS), false);
     }
 
+    /**
+     * Splits pipe-delimited rows while respecting escaped pipe characters.
+     */
     private List<String> splitLine(String line) {
         List<String> parts = new ArrayList<>();
         StringBuilder current = new StringBuilder();
@@ -367,6 +414,9 @@ public class SmartLibrary implements LibraryADT {
         return parts;
     }
 
+    /**
+     * Escapes characters that would otherwise break the pipe-delimited file.
+     */
     private String escape(String value) {
         return value.replace("\\", "\\\\").replace("|", "\\|");
     }

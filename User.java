@@ -1,3 +1,8 @@
+/**
+ * Represents a registered Smart Library user.
+ * The role is stored with the user so login can route admins and students to
+ * the correct menu.
+ */
 public class User {
     private final String userId;
     private final String name;
