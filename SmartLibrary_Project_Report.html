@@ -1,0 +1,1180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SmartLibrary — Project Report</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+
+  :root {
+    --primary: #1a1a2e;
+    --secondary: #16213e;
+    --accent: #0f3460;
+    --highlight: #e94560;
+    --text: #2d3748;
+    --text-light: #718096;
+    --bg: #ffffff;
+    --border: #e2e8f0;
+    --code-bg: #f7fafc;
+    --table-header: #1a1a2e;
+    --table-stripe: #f8fafc;
+  }
+
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+
+  body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    color: var(--text);
+    line-height: 1.7;
+    font-size: 11pt;
+    background: var(--bg);
+  }
+
+  @page {
+    size: A4;
+    margin: 20mm 22mm 20mm 22mm;
+  }
+
+  @media print {
+    body { font-size: 10.5pt; }
+    .page-break { page-break-before: always; }
+    .no-break { page-break-inside: avoid; }
+    h2 { page-break-after: avoid; }
+    h3 { page-break-after: avoid; }
+  }
+
+  /* Cover Page */
+  .cover {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 90vh;
+    text-align: center;
+    padding: 60px 40px;
+  }
+
+  .cover-icon {
+    font-size: 72px;
+    margin-bottom: 20px;
+  }
+
+  .cover h1 {
+    font-size: 36pt;
+    font-weight: 700;
+    color: var(--primary);
+    margin-bottom: 8px;
+    letter-spacing: -0.5px;
+  }
+
+  .cover .subtitle {
+    font-size: 14pt;
+    color: var(--text-light);
+    margin-bottom: 40px;
+    font-weight: 400;
+  }
+
+  .cover-line {
+    width: 80px;
+    height: 4px;
+    background: linear-gradient(90deg, var(--highlight), var(--accent));
+    border-radius: 2px;
+    margin: 0 auto 40px;
+  }
+
+  .cover-meta {
+    font-size: 11pt;
+    color: var(--text-light);
+    line-height: 2;
+  }
+
+  .cover-meta strong {
+    color: var(--text);
+    font-weight: 600;
+  }
+
+  /* Table of Contents */
+  .toc {
+    padding: 40px 0;
+  }
+
+  .toc h2 {
+    font-size: 20pt;
+    color: var(--primary);
+    margin-bottom: 24px;
+    padding-bottom: 8px;
+    border-bottom: 3px solid var(--highlight);
+    display: inline-block;
+  }
+
+  .toc ol {
+    list-style: none;
+    counter-reset: toc-counter;
+    padding: 0;
+  }
+
+  .toc ol li {
+    counter-increment: toc-counter;
+    padding: 10px 0;
+    border-bottom: 1px dotted var(--border);
+    font-size: 11.5pt;
+  }
+
+  .toc ol li::before {
+    content: counter(toc-counter) ".";
+    font-weight: 600;
+    color: var(--highlight);
+    margin-right: 12px;
+    min-width: 28px;
+    display: inline-block;
+  }
+
+  /* Section Headings */
+  h2 {
+    font-size: 18pt;
+    font-weight: 700;
+    color: var(--primary);
+    margin: 36px 0 16px;
+    padding-bottom: 6px;
+    border-bottom: 3px solid var(--highlight);
+    display: inline-block;
+  }
+
+  h3 {
+    font-size: 13pt;
+    font-weight: 600;
+    color: var(--accent);
+    margin: 24px 0 10px;
+  }
+
+  h4 {
+    font-size: 11.5pt;
+    font-weight: 600;
+    color: var(--secondary);
+    margin: 18px 0 8px;
+  }
+
+  /* Body Text */
+  p {
+    margin: 10px 0;
+    text-align: justify;
+  }
+
+  ul, ol {
+    margin: 10px 0 10px 24px;
+  }
+
+  li {
+    margin: 4px 0;
+  }
+
+  /* Tables */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 14px 0;
+    font-size: 10pt;
+  }
+
+  thead th {
+    background: var(--table-header);
+    color: #fff;
+    padding: 10px 12px;
+    text-align: left;
+    font-weight: 600;
+    font-size: 9.5pt;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  tbody td {
+    padding: 9px 12px;
+    border-bottom: 1px solid var(--border);
+    vertical-align: top;
+  }
+
+  tbody tr:nth-child(even) {
+    background: var(--table-stripe);
+  }
+
+  /* Code */
+  code {
+    font-family: 'JetBrains Mono', 'Consolas', monospace;
+    font-size: 9.5pt;
+    background: var(--code-bg);
+    padding: 2px 6px;
+    border-radius: 4px;
+    border: 1px solid var(--border);
+    color: var(--accent);
+  }
+
+  pre {
+    background: #1a1a2e;
+    color: #e2e8f0;
+    padding: 16px 20px;
+    border-radius: 8px;
+    overflow-x: auto;
+    margin: 14px 0;
+    font-family: 'JetBrains Mono', 'Consolas', monospace;
+    font-size: 9pt;
+    line-height: 1.6;
+  }
+
+  pre code {
+    background: none;
+    border: none;
+    padding: 0;
+    color: inherit;
+    font-size: inherit;
+  }
+
+  /* Callout Boxes */
+  .callout {
+    padding: 14px 18px;
+    border-radius: 6px;
+    margin: 16px 0;
+    border-left: 4px solid;
+  }
+
+  .callout-info {
+    background: #ebf8ff;
+    border-color: #3182ce;
+    color: #2c5282;
+  }
+
+  .callout-success {
+    background: #f0fff4;
+    border-color: #38a169;
+    color: #276749;
+  }
+
+  .callout-warn {
+    background: #fffaf0;
+    border-color: #dd6b20;
+    color: #9c4221;
+  }
+
+  /* Diagram */
+  .diagram {
+    background: var(--code-bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 20px;
+    margin: 16px 0;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 8.5pt;
+    line-height: 1.5;
+    white-space: pre;
+    overflow-x: auto;
+  }
+
+  /* Figure Captions */
+  .caption {
+    text-align: center;
+    font-size: 9.5pt;
+    color: var(--text-light);
+    font-style: italic;
+    margin-top: 6px;
+  }
+
+  /* Footer */
+  .footer {
+    text-align: center;
+    font-size: 9pt;
+    color: var(--text-light);
+    padding: 30px 0 10px;
+    border-top: 1px solid var(--border);
+    margin-top: 40px;
+  }
+
+  /* Section numbering */
+  .section-num {
+    color: var(--highlight);
+    font-weight: 700;
+    margin-right: 6px;
+  }
+</style>
+</head>
+<body>
+
+<!-- ================= COVER PAGE ================= -->
+<div class="cover">
+  <div class="cover-icon">📚</div>
+  <h1>SmartLibrary</h1>
+  <p class="subtitle">Console-Based Library Management System</p>
+  <div class="cover-line"></div>
+  <div class="cover-meta">
+    <strong>Course:</strong> Data Structures<br>
+    <strong>Language:</strong> Java 17+<br>
+    <strong>Type:</strong> Console Application<br>
+    <strong>Date:</strong> May 2026
+  </div>
+</div>
+
+<!-- ================= TABLE OF CONTENTS ================= -->
+<div class="page-break"></div>
+<div class="toc">
+  <h2>Table of Contents</h2>
+  <ol>
+    <li>Introduction</li>
+    <li>Problem Statement</li>
+    <li>Objectives</li>
+    <li>System Design &amp; Approach</li>
+    <li>Data Structures Used</li>
+    <li>Implementation Details</li>
+    <li>User Interface &amp; Workflow</li>
+    <li>Data Persistence</li>
+    <li>Testing</li>
+    <li>Results &amp; Discussion</li>
+    <li>Conclusion</li>
+    <li>References</li>
+    <li>Appendices</li>
+  </ol>
+</div>
+
+<!-- ================= 1. INTRODUCTION ================= -->
+<div class="page-break"></div>
+<h2><span class="section-num">1.</span> Introduction</h2>
+
+<p>
+  SmartLibrary is a Java-based console application that simulates a small-scale library management system.
+  It supports two user roles — <strong>Admin</strong> and <strong>Student</strong> — each with a dedicated
+  set of operations. The application was designed as a practical exercise in applying fundamental data
+  structures to solve a real-world problem: efficiently managing a book catalogue and tracking student
+  borrowing activity.
+</p>
+
+<p>
+  The system stores its book catalogue in a <strong>Binary Search Tree (BST)</strong> keyed by ISBN,
+  enabling efficient ordered retrieval, search, and modification. Each student's borrowing history is
+  maintained in a <strong>linked-list stack</strong>, which naturally presents the most recent activity
+  first. All data is persisted to local text files, allowing the application to restore its state across
+  sessions without requiring a database.
+</p>
+
+<!-- ================= 2. PROBLEM STATEMENT ================= -->
+<h2><span class="section-num">2.</span> Problem Statement</h2>
+
+<p>
+  Traditional manual library management involves significant overhead in tracking book availability,
+  managing borrow and return records, and maintaining an organized catalogue. Small libraries and
+  academic institutions often lack access to commercial library management software, leading to several
+  challenges:
+</p>
+
+<ol>
+  <li><strong>Inefficient Book Lookup:</strong> Searching for a specific book in an unorganized collection requires scanning every record, resulting in O(n) lookup time.</li>
+  <li><strong>No Borrowing History:</strong> Without systematic tracking, it is difficult to determine which books a student has borrowed, when they were borrowed, and whether they have been returned.</li>
+  <li><strong>Lack of Role Separation:</strong> Library staff and students often need different levels of access — staff should manage the catalogue, while students should only borrow and return books.</li>
+  <li><strong>Data Loss Between Sessions:</strong> Without persistence, all catalogue and borrowing data is lost when the application terminates.</li>
+  <li><strong>No Sorted Display:</strong> Users benefit from seeing books in a consistent, sorted order, but maintaining sort order manually is error-prone.</li>
+</ol>
+
+<p>
+  The SmartLibrary project addresses these problems by implementing a role-based library management system
+  that uses purpose-built data structures to deliver efficient search, insertion, and deletion of book
+  records, along with chronological tracking of every borrowing transaction.
+</p>
+
+<!-- ================= 3. OBJECTIVES ================= -->
+<h2><span class="section-num">3.</span> Objectives</h2>
+
+<ol>
+  <li>Design and implement a <strong>Binary Search Tree</strong> to store and manage book records, enabling O(log n) average-case search, insertion, and deletion by ISBN.</li>
+  <li>Design and implement a <strong>linked-list stack</strong> for each student to record borrowing history in last-in-first-out (LIFO) order.</li>
+  <li>Implement a <strong>role-based access control</strong> system separating Admin and Student operations.</li>
+  <li>Implement <strong>file-based data persistence</strong> so that all catalogue, loan, and user data survives application restarts.</li>
+  <li>Provide a <strong>clean console-based user interface</strong> with input validation, formatted table output, and clear error messages.</li>
+  <li>Apply <strong>abstraction</strong> through a Java interface (<code>LibraryADT</code>) to decouple the service layer from the UI.</li>
+</ol>
+
+<!-- ================= 4. SYSTEM DESIGN & APPROACH ================= -->
+<div class="page-break"></div>
+<h2><span class="section-num">4.</span> System Design &amp; Approach</h2>
+
+<h3>4.1 Architectural Overview</h3>
+
+<p>The application follows a <strong>layered architecture</strong> with clear separation of concerns:</p>
+
+<table class="no-break">
+  <thead>
+    <tr><th>Layer</th><th>Component(s)</th><th>Responsibility</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><strong>Presentation</strong></td>
+      <td><code>Main.java</code></td>
+      <td>Console menus, user input/output, table formatting</td>
+    </tr>
+    <tr>
+      <td><strong>Service</strong></td>
+      <td><code>SmartLibrary.java</code><br><code>UserStore.java</code></td>
+      <td>Business logic, data validation, persistence orchestration</td>
+    </tr>
+    <tr>
+      <td><strong>ADT/Interface</strong></td>
+      <td><code>LibraryADT.java</code></td>
+      <td>Contract for library operations (abstraction layer)</td>
+    </tr>
+    <tr>
+      <td><strong>Data Structures</strong></td>
+      <td><code>BookBST.java</code><br><code>BorrowHistoryStack.java</code></td>
+      <td>Custom BST and Stack implementations</td>
+    </tr>
+    <tr>
+      <td><strong>Models</strong></td>
+      <td><code>Book.java</code>, <code>LoanRecord.java</code>, <code>User.java</code></td>
+      <td>Data carriers (POJOs)</td>
+    </tr>
+    <tr>
+      <td><strong>Persistence</strong></td>
+      <td><code>smart_library_data.txt</code><br><code>user_info.txt</code></td>
+      <td>Pipe-delimited flat-file storage</td>
+    </tr>
+  </tbody>
+</table>
+
+<div class="diagram">
+┌──────────────────────────────────────────────────────────────┐
+│                     Main.java (UI Layer)                     │
+│         Console menus · Input validation · Table output      │
+├──────────────────────────────────────────────────────────────┤
+│                                                              │
+│  ┌─────────────────────┐        ┌────────────────────────┐  │
+│  │  SmartLibrary.java  │        │    UserStore.java      │  │
+│  │  implements         │        │    User management     │  │
+│  │  LibraryADT         │        │    & persistence       │  │
+│  └────────┬────────────┘        └────────────────────────┘  │
+│           │                                                  │
+│  ┌────────┴──────────────────────────────────────────────┐  │
+│  │                Data Structure Layer                    │  │
+│  │                                                       │  │
+│  │  ┌──────────────────┐   ┌──────────────────────────┐  │  │
+│  │  │  BookBST         │   │  BorrowHistoryStack      │  │  │
+│  │  │  (Binary Search  │   │  (Linked-List Stack)     │  │  │
+│  │  │   Tree)          │   │                          │  │  │
+│  │  └────────┬─────────┘   └────────────┬─────────────┘  │  │
+│  │           │                          │                │  │
+│  │  ┌────────┴─────────┐   ┌────────────┴─────────────┐  │  │
+│  │  │  Book.java       │   │  LoanRecord.java         │  │  │
+│  │  └──────────────────┘   └──────────────────────────┘  │  │
+│  └───────────────────────────────────────────────────────┘  │
+│                                                              │
+│  ┌──────────────────────────────────────────────────────┐   │
+│  │  Persistence: smart_library_data.txt · user_info.txt  │   │
+│  └──────────────────────────────────────────────────────┘   │
+└──────────────────────────────────────────────────────────────┘
+</div>
+<p class="caption">Figure 1: System Architecture Diagram</p>
+
+<h3>4.2 Design Decisions</h3>
+
+<h4>Why a Binary Search Tree for the Catalogue?</h4>
+<p>
+  A BST was chosen over a simple list or array because the library needs to frequently search for books
+  by ISBN, add new books, and remove books. A BST provides O(log n) average-case performance for all three
+  operations, compared to O(n) for a linear scan. Additionally, an in-order traversal of the BST naturally
+  produces a sorted list of books, which is required for the "View All Available Books" feature.
+</p>
+
+<h4>Why a Stack for Borrowing History?</h4>
+<p>
+  A stack (LIFO) was chosen for borrowing history because users most naturally want to see their
+  <em>most recent</em> activity first. Each new borrow or return event is pushed onto the stack, and
+  when the history is displayed, it reads from top to bottom — newest to oldest. This avoids the need
+  for any explicit sorting step.
+</p>
+
+<h4>Why Flat-File Persistence?</h4>
+<p>
+  The project uses pipe-delimited text files rather than a database to keep the application simple and
+  dependency-free. The custom escape-character parser ensures that special characters in book titles
+  and author names do not corrupt the data format.
+</p>
+
+<h4>Why an Interface (LibraryADT)?</h4>
+<p>
+  The <code>LibraryADT</code> interface abstracts the library operations so the UI layer (<code>Main.java</code>)
+  depends only on the contract, not on the implementation. This allows the underlying data structures to
+  be changed without modifying the UI code.
+</p>
+
+<!-- ================= 5. DATA STRUCTURES USED ================= -->
+<div class="page-break"></div>
+<h2><span class="section-num">5.</span> Data Structures Used</h2>
+
+<h3>5.1 Binary Search Tree — <code>BookBST</code></h3>
+
+<p>
+  The <code>BookBST</code> class implements a standard binary search tree where each node contains a
+  <code>Book</code> object. The tree is keyed by the book's ISBN number (a <code>long</code> value).
+</p>
+
+<h4>Node Structure</h4>
+<pre><code>private static class Node {
+    private Book book;    // The book data stored at this node
+    private Node left;    // Left child (smaller ISBN)
+    private Node right;   // Right child (larger ISBN)
+}</code></pre>
+
+<h4>Operations &amp; Complexity</h4>
+<table class="no-break">
+  <thead>
+    <tr><th>Operation</th><th>Method Signature</th><th>Average Case</th><th>Worst Case</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>Insert</td><td><code>insert(Book book)</code></td><td>O(log n)</td><td>O(n)</td></tr>
+    <tr><td>Search</td><td><code>search(long isbn)</code></td><td>O(log n)</td><td>O(n)</td></tr>
+    <tr><td>Delete</td><td><code>deleteByIsbn(long isbn)</code></td><td>O(log n)</td><td>O(n)</td></tr>
+    <tr><td>In-order traversal</td><td><code>toList()</code></td><td>O(n)</td><td>O(n)</td></tr>
+  </tbody>
+</table>
+
+<div class="callout callout-info">
+  <strong>Deletion Strategy:</strong> When a node with two children is deleted, it is replaced by its
+  <em>in-order successor</em> — the smallest node in its right subtree. This preserves the BST ordering
+  invariant.
+</div>
+
+<h4>BST Traversal Diagram</h4>
+<div class="diagram">
+                   [9780134685991]
+                  Effective Java
+                 /                \
+    [9780132350884]            [9780201633610]
+     Clean Code               Design Patterns
+          \                   /              \
+    [9780134093413]    [9780136042594]   [9780321573513]
+    Computer           AI: A Modern       Algorithms
+    Networking         Approach
+</div>
+<p class="caption">Figure 2: Example BST structure (keyed by ISBN, in-order traversal yields sorted output)</p>
+
+<h3>5.2 Linked-List Stack — <code>BorrowHistoryStack</code></h3>
+
+<p>
+  Each student's borrowing history is maintained in a singly-linked-list stack. The stack uses a custom
+  <code>Node</code> class with an immutable reference to a <code>LoanRecord</code> and a pointer to the
+  next node.
+</p>
+
+<h4>Node Structure</h4>
+<pre><code>private static class Node {
+    private final LoanRecord loanRecord;  // Loan data
+    private final Node next;              // Next node down the stack
+}</code></pre>
+
+<h4>Operations &amp; Complexity</h4>
+<table class="no-break">
+  <thead>
+    <tr><th>Operation</th><th>Method Signature</th><th>Time Complexity</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>Push</td><td><code>push(LoanRecord loanRecord)</code></td><td>O(1)</td></tr>
+    <tr><td>Is Empty</td><td><code>isEmpty()</code></td><td>O(1)</td></tr>
+    <tr><td>Find Active Loan</td><td><code>findActiveLoanByIsbn(long isbn)</code></td><td>O(n)</td></tr>
+    <tr><td>Convert to List</td><td><code>toList()</code></td><td>O(n)</td></tr>
+  </tbody>
+</table>
+
+<h4>Stack Behaviour Diagram</h4>
+<div class="diagram">
+Push "Borrow Clean Code"        Push "Return Clean Code"        Push "Borrow Effective Java"
+
+┌──────────────────┐           ┌──────────────────┐           ┌──────────────────────┐
+│ Borrow Clean Code│           │ Return Clean Code│           │ Borrow Effective Java│  ← TOP
+└────────┬─────────┘           └────────┬─────────┘           └──────────┬───────────┘
+         │                              │                                │
+         ▼                     ┌────────┴─────────┐           ┌─────────┴──────────┐
+       null                    │ Borrow Clean Code│           │ Return Clean Code  │
+                               └────────┬─────────┘           └─────────┬──────────┘
+                                        │                               │
+                                        ▼                     ┌─────────┴──────────┐
+                                      null                    │ Borrow Clean Code  │
+                                                              └─────────┬──────────┘
+                                                                        │
+                                                                        ▼
+                                                                      null
+</div>
+<p class="caption">Figure 3: Stack growth — most recent activity is always on top</p>
+
+<h3>5.3 LinkedHashMap — Student-to-Stack Mapping</h3>
+
+<p>
+  A <code>LinkedHashMap&lt;String, BorrowHistoryStack&gt;</code> maps each student ID to their personal
+  history stack. This provides:
+</p>
+
+<ul>
+  <li><strong>O(1) lookup</strong> to retrieve a student's history stack by ID</li>
+  <li><strong>Insertion-order iteration</strong> for consistent, reproducible file output</li>
+  <li><strong>Lazy initialization</strong> via <code>computeIfAbsent()</code> — a stack is created only when a student first borrows a book</li>
+</ul>
+
+<h3>5.4 Summary of Data Structures</h3>
+<table class="no-break">
+  <thead>
+    <tr><th>Data Structure</th><th>Class</th><th>Purpose</th><th>Key Advantage</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>Binary Search Tree</td><td><code>BookBST</code></td><td>Book catalogue storage</td><td>O(log n) search/insert/delete; sorted traversal</td></tr>
+    <tr><td>Linked-List Stack</td><td><code>BorrowHistoryStack</code></td><td>Per-student loan history</td><td>O(1) push; natural LIFO ordering</td></tr>
+    <tr><td>LinkedHashMap</td><td>(JDK built-in)</td><td>Student → Stack mapping</td><td>O(1) lookup; insertion-order iteration</td></tr>
+    <tr><td>ArrayList</td><td>(JDK built-in)</td><td>Temporary lists, file I/O</td><td>Dynamic sizing; indexed access</td></tr>
+  </tbody>
+</table>
+
+<!-- ================= 6. IMPLEMENTATION DETAILS ================= -->
+<div class="page-break"></div>
+<h2><span class="section-num">6.</span> Implementation Details</h2>
+
+<h3>6.1 File Descriptions</h3>
+
+<table>
+  <thead>
+    <tr><th>File</th><th>Lines</th><th>Role</th></tr>
+  </thead>
+  <tbody>
+    <tr><td><code>Main.java</code></td><td>525</td><td>Console UI — entry point, menus, input reading, formatted table output</td></tr>
+    <tr><td><code>SmartLibrary.java</code></td><td>424</td><td>Service layer — implements <code>LibraryADT</code>, manages BST and stacks, handles file I/O</td></tr>
+    <tr><td><code>LibraryADT.java</code></td><td>53</td><td>Interface — defines 9 core library operations</td></tr>
+    <tr><td><code>BookBST.java</code></td><td>162</td><td>BST — insert, search, delete, in-order traversal</td></tr>
+    <tr><td><code>BorrowHistoryStack.java</code></td><td>71</td><td>Stack — push, isEmpty, findActiveLoan, toList</td></tr>
+    <tr><td><code>Book.java</code></td><td>37</td><td>Model — immutable book record (ISBN, title, author)</td></tr>
+    <tr><td><code>LoanRecord.java</code></td><td>67</td><td>Model — borrowing transaction (student, book, dates, status)</td></tr>
+    <tr><td><code>User.java</code></td><td>29</td><td>Model — registered user (ID, name, role)</td></tr>
+    <tr><td><code>UserStore.java</code></td><td>215</td><td>User management — registration, lookup, persistence</td></tr>
+  </tbody>
+</table>
+<p><strong>Total:</strong> ~1,583 lines of Java code across 9 source files.</p>
+
+<h3>6.2 Key Algorithms</h3>
+
+<h4>BST Insertion (Recursive)</h4>
+<p>
+  New books are inserted by recursively traversing the tree: if the ISBN is less than the current node,
+  go left; if greater, go right; if a <code>null</code> child is reached, insert the new node. Duplicate
+  ISBNs are rejected by returning <code>false</code>.
+</p>
+
+<h4>BST Deletion (In-order Successor)</h4>
+<p>
+  When deleting a node with two children, the algorithm finds the in-order successor (the smallest node
+  in the right subtree), copies its book data into the current node, and then recursively deletes the
+  successor. This maintains the BST invariant without restructuring the entire tree.
+</p>
+
+<h4>Borrowing Workflow</h4>
+<ol>
+  <li>Search the BST for the requested ISBN.</li>
+  <li>If found, remove the book from the BST (it is no longer available).</li>
+  <li>Create a <code>LoanRecord</code> with today's date and a 14-day due date.</li>
+  <li>Push the loan record onto the student's history stack.</li>
+  <li>Save all data to file.</li>
+</ol>
+
+<h4>Return Workflow</h4>
+<ol>
+  <li>Look up the student's history stack.</li>
+  <li>Search the stack for an active (unreturned) loan matching the ISBN.</li>
+  <li>If found, mark the loan as returned.</li>
+  <li>Re-insert the book into the BST (it is available again).</li>
+  <li>Save all data to file.</li>
+</ol>
+
+<h3>6.3 Data Persistence Format</h3>
+
+<p>Data is stored in pipe-delimited text files with escape character support:</p>
+
+<pre><code># smart_library_data.txt
+[CATALOGUE]
+9780132350884|Clean Code|Robert C. Martin
+9780134093413|Computer Networking|James Kurose, Keith Ross
+
+[LOANS]
+S001|9780131103627|The C Programming Language|Brian W. Kernighan, Dennis M. Ritchie|2026-05-18|2026-06-01|false
+
+# user_info.txt
+[USERS]
+A001|Default Admin|ADMIN
+S001|Default Student|STUDENT</code></pre>
+
+<div class="callout callout-info">
+  <strong>Escape Handling:</strong> The custom <code>splitLine()</code> parser handles backslash-escaped
+  pipe characters (<code>\|</code>) and escaped backslashes (<code>\\</code>), ensuring that special
+  characters in book titles and author names do not break the data format.
+</div>
+
+<!-- ================= 7. USER INTERFACE & WORKFLOW ================= -->
+<div class="page-break"></div>
+<h2><span class="section-num">7.</span> User Interface &amp; Workflow</h2>
+
+<h3>7.1 Application Flow</h3>
+
+<div class="diagram">
+                         ┌─────────────┐
+                         │  Start App  │
+                         └──────┬──────┘
+                                │
+                         ┌──────▼──────┐
+                         │  Entry Menu │
+                         │ 1. Login    │
+                         │ 2. Register │
+                         │ 3. Exit     │
+                         └──────┬──────┘
+                                │
+                  ┌─────────────┼─────────────┐
+                  │             │             │
+           ┌──────▼──────┐  ┌──▼──────┐  ┌───▼───┐
+           │   Login     │  │Register │  │ Exit  │
+           │ Enter ID    │  │New User │  │       │
+           └──────┬──────┘  └─────────┘  └───────┘
+                  │
+         ┌────────┴────────┐
+         │                 │
+  ┌──────▼──────┐   ┌──────▼──────┐
+  │ Admin Menu  │   │Student Menu │
+  │ (A-prefix)  │   │ (S-prefix)  │
+  ├─────────────┤   ├─────────────┤
+  │ 1. Add      │   │ 1. Search   │
+  │ 2. Search   │   │ 2. Borrow   │
+  │ 3. View All │   │ 3. Return   │
+  │ 4. Edit     │   │ 4. History  │
+  │ 5. Remove   │   │ 5. View All │
+  │ 6. Keyword  │   │ 6. Keyword  │
+  │ 7. History  │   │ 7. Logout   │
+  │ 8. Logout   │   └─────────────┘
+  └─────────────┘
+</div>
+<p class="caption">Figure 4: Application Navigation Flow</p>
+
+<h3>7.2 Console Output Formatting</h3>
+
+<p>
+  The UI layer dynamically calculates column widths based on the actual data content, ensuring
+  that tables are properly aligned regardless of title or author length. This is implemented in the
+  <code>printBooks()</code> and <code>printLoanRecords()</code> methods using <code>String.format()</code>
+  with computed width specifiers.
+</p>
+
+<h3>7.3 Input Validation</h3>
+
+<table>
+  <thead>
+    <tr><th>Validation</th><th>Method</th><th>Behaviour</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>Empty text fields</td><td><code>readRequiredText()</code></td><td>Returns <code>null</code> and prints error</td></tr>
+    <tr><td>Invalid ISBN format</td><td><code>readPositiveIsbn()</code></td><td>Rejects non-numeric or negative values</td></tr>
+    <tr><td>Invalid menu choice</td><td><code>readMenuChoice()</code></td><td>Returns -1, triggering the default branch</td></tr>
+    <tr><td>Invalid user ID format</td><td><code>isValidUserId()</code></td><td>Must start with 'A' or 'S'</td></tr>
+    <tr><td>Duplicate user ID</td><td><code>registerUser()</code></td><td>Checks map before insertion</td></tr>
+    <tr><td>Duplicate ISBN</td><td><code>BookBST.insert()</code></td><td>Returns <code>false</code> for existing ISBNs</td></tr>
+  </tbody>
+</table>
+
+<!-- ================= 8. DATA PERSISTENCE ================= -->
+<h2><span class="section-num">8.</span> Data Persistence</h2>
+
+<h3>8.1 Persistence Strategy</h3>
+<p>
+  The application uses a <strong>write-on-change</strong> strategy: the entire data file is rewritten
+  after every state-changing operation (add, edit, remove, borrow, return, register). While this is
+  less efficient than incremental updates, it ensures data consistency and simplifies the implementation
+  for a small-scale application.
+</p>
+
+<h3>8.2 Load Process</h3>
+<ol>
+  <li>Check if the data file exists. If not, start with an empty catalogue.</li>
+  <li>Read all lines and parse section headers (<code>[CATALOGUE]</code>, <code>[LOANS]</code>).</li>
+  <li>Parse book records into <code>Book</code> objects and insert into the BST.</li>
+  <li>Parse loan records into <code>LoanRecord</code> objects, grouped by student ID.</li>
+  <li>Push loan records into per-student stacks in reverse order to preserve the original stack ordering.</li>
+</ol>
+
+<h3>8.3 Legacy Data Migration</h3>
+<p>
+  The system supports an older <code>[BORROW_HISTORY]</code> section format. Records found under this
+  header are automatically migrated to the modern <code>[LOANS]</code> format under a special
+  <code>LEGACY_STUDENT</code> ID. This ensures backward compatibility when upgrading from older versions.
+</p>
+
+<!-- ================= 9. TESTING ================= -->
+<div class="page-break"></div>
+<h2><span class="section-num">9.</span> Testing</h2>
+
+<h3>9.1 Testing Approach</h3>
+<p>
+  Testing was conducted through <strong>manual functional testing</strong> of all user-facing operations.
+  Each test case was designed to verify both the expected (happy path) and error (edge case) behaviour
+  of the system.
+</p>
+
+<h3>9.2 Functional Test Cases</h3>
+
+<table>
+  <thead>
+    <tr><th>#</th><th>Test Case</th><th>Steps</th><th>Expected Result</th><th>Status</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>1</td>
+      <td>Add a new book</td>
+      <td>Login as admin → Add Book → Enter valid ISBN, title, author</td>
+      <td>"Book added successfully." Book appears in catalogue.</td>
+      <td>✅ Pass</td>
+    </tr>
+    <tr>
+      <td>2</td>
+      <td>Add duplicate ISBN</td>
+      <td>Add a book with an ISBN already in the catalogue</td>
+      <td>"Book could not be added." Catalogue unchanged.</td>
+      <td>✅ Pass</td>
+    </tr>
+    <tr>
+      <td>3</td>
+      <td>Search book by ISBN</td>
+      <td>Enter a valid ISBN present in the catalogue</td>
+      <td>Book details displayed in a formatted table.</td>
+      <td>✅ Pass</td>
+    </tr>
+    <tr>
+      <td>4</td>
+      <td>Search non-existent ISBN</td>
+      <td>Enter an ISBN not in the catalogue</td>
+      <td>"No available book found." message displayed.</td>
+      <td>✅ Pass</td>
+    </tr>
+    <tr>
+      <td>5</td>
+      <td>View all available books</td>
+      <td>Select "View All Available Books" from menu</td>
+      <td>All books displayed sorted by ISBN in formatted table.</td>
+      <td>✅ Pass</td>
+    </tr>
+    <tr>
+      <td>6</td>
+      <td>Edit book details</td>
+      <td>Login as admin → Edit → Enter ISBN → Enter new title/author</td>
+      <td>"Book details updated successfully." Updated values appear.</td>
+      <td>✅ Pass</td>
+    </tr>
+    <tr>
+      <td>7</td>
+      <td>Remove a book</td>
+      <td>Login as admin → Remove → Enter ISBN</td>
+      <td>"Book removed permanently." Book no longer in catalogue.</td>
+      <td>✅ Pass</td>
+    </tr>
+    <tr>
+      <td>8</td>
+      <td>Borrow a book</td>
+      <td>Login as student → Borrow → Enter available ISBN</td>
+      <td>"Borrowed successfully." Book removed from available list.</td>
+      <td>✅ Pass</td>
+    </tr>
+    <tr>
+      <td>9</td>
+      <td>Borrow unavailable book</td>
+      <td>Try to borrow a book already checked out</td>
+      <td>"Borrow failed." message displayed.</td>
+      <td>✅ Pass</td>
+    </tr>
+    <tr>
+      <td>10</td>
+      <td>Return a book</td>
+      <td>Login as student → Return → Enter borrowed ISBN</td>
+      <td>"Returned successfully." Book restored to catalogue.</td>
+      <td>✅ Pass</td>
+    </tr>
+    <tr>
+      <td>11</td>
+      <td>Return a non-borrowed book</td>
+      <td>Try to return a book not in the student's active loans</td>
+      <td>"Return failed." message displayed.</td>
+      <td>✅ Pass</td>
+    </tr>
+    <tr>
+      <td>12</td>
+      <td>View borrowing history</td>
+      <td>Login as student → View My History</td>
+      <td>Loan records displayed most-recent-first.</td>
+      <td>✅ Pass</td>
+    </tr>
+    <tr>
+      <td>13</td>
+      <td>Search by title keyword</td>
+      <td>Enter partial title (e.g., "Java")</td>
+      <td>All matching available books displayed.</td>
+      <td>✅ Pass</td>
+    </tr>
+    <tr>
+      <td>14</td>
+      <td>Search by author keyword</td>
+      <td>Enter partial author name</td>
+      <td>All matching available books displayed.</td>
+      <td>✅ Pass</td>
+    </tr>
+    <tr>
+      <td>15</td>
+      <td>Data persistence</td>
+      <td>Add books → Exit → Restart application</td>
+      <td>Previously added books and loans are restored.</td>
+      <td>✅ Pass</td>
+    </tr>
+  </tbody>
+</table>
+
+<h3>9.3 Edge Case &amp; Validation Tests</h3>
+
+<table>
+  <thead>
+    <tr><th>#</th><th>Scenario</th><th>Input</th><th>Expected Behaviour</th><th>Status</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>1</td>
+      <td>Empty ISBN field</td>
+      <td>(blank)</td>
+      <td>"Invalid ISBN. Please enter numbers only."</td>
+      <td>✅ Pass</td>
+    </tr>
+    <tr>
+      <td>2</td>
+      <td>Negative ISBN</td>
+      <td>-12345</td>
+      <td>"ISBN must be a positive number."</td>
+      <td>✅ Pass</td>
+    </tr>
+    <tr>
+      <td>3</td>
+      <td>Non-numeric ISBN</td>
+      <td>abc</td>
+      <td>"Invalid ISBN. Please enter numbers only."</td>
+      <td>✅ Pass</td>
+    </tr>
+    <tr>
+      <td>4</td>
+      <td>Empty title/author</td>
+      <td>(blank)</td>
+      <td>"This field cannot be empty."</td>
+      <td>✅ Pass</td>
+    </tr>
+    <tr>
+      <td>5</td>
+      <td>Invalid menu choice</td>
+      <td>99 or "abc"</td>
+      <td>"Invalid choice. Please select a number from 1 to N."</td>
+      <td>✅ Pass</td>
+    </tr>
+    <tr>
+      <td>6</td>
+      <td>Register duplicate user ID</td>
+      <td>A001 (already exists)</td>
+      <td>"Registration failed. The user ID may already exist."</td>
+      <td>✅ Pass</td>
+    </tr>
+    <tr>
+      <td>7</td>
+      <td>Login with unregistered ID</td>
+      <td>S999</td>
+      <td>"User ID not found. Please register first."</td>
+      <td>✅ Pass</td>
+    </tr>
+    <tr>
+      <td>8</td>
+      <td>Invalid user ID prefix</td>
+      <td>X001</td>
+      <td>"Registration failed. Admin IDs must start with A..."</td>
+      <td>✅ Pass</td>
+    </tr>
+    <tr>
+      <td>9</td>
+      <td>Edit borrowed book</td>
+      <td>ISBN of a checked-out book</td>
+      <td>"Edit failed. Only available catalogue books can be edited."</td>
+      <td>✅ Pass</td>
+    </tr>
+    <tr>
+      <td>10</td>
+      <td>Corrupt data file</td>
+      <td>Malformed lines in data file</td>
+      <td>Invalid lines silently skipped; valid data loaded.</td>
+      <td>✅ Pass</td>
+    </tr>
+    <tr>
+      <td>11</td>
+      <td>Missing data file</td>
+      <td>Delete data files → start app</td>
+      <td>Default users created; empty catalogue initialized.</td>
+      <td>✅ Pass</td>
+    </tr>
+    <tr>
+      <td>12</td>
+      <td>Pipe character in book title</td>
+      <td>Title containing "|"</td>
+      <td>Character properly escaped; data saved/loaded correctly.</td>
+      <td>✅ Pass</td>
+    </tr>
+  </tbody>
+</table>
+
+<!-- ================= 10. RESULTS & DISCUSSION ================= -->
+<div class="page-break"></div>
+<h2><span class="section-num">10.</span> Results &amp; Discussion</h2>
+
+<h3>10.1 Achievements</h3>
+<ul>
+  <li>All 9 operations defined in <code>LibraryADT</code> are fully implemented and functional.</li>
+  <li>The BST successfully maintains sorted order and provides efficient search by ISBN.</li>
+  <li>The stack-based history correctly displays borrowing activity in most-recent-first order.</li>
+  <li>Data persistence ensures no data loss between sessions.</li>
+  <li>Input validation handles all common error scenarios gracefully.</li>
+  <li>The layered architecture cleanly separates UI, business logic, and data structure concerns.</li>
+</ul>
+
+<h3>10.2 Limitations</h3>
+<ul>
+  <li><strong>Unbalanced BST:</strong> The BST is not self-balancing (e.g., AVL or Red-Black). If books are inserted in sorted ISBN order, the tree degenerates to O(n) performance. For a small library catalogue, this is acceptable.</li>
+  <li><strong>Full-file rewrite:</strong> Every state change rewrites the entire data file. For large datasets, an incremental or database-backed approach would be more efficient.</li>
+  <li><strong>No authentication:</strong> Users log in by ID only; there are no passwords or security measures.</li>
+  <li><strong>Single-copy books:</strong> Each ISBN can appear only once in the catalogue. Real libraries may have multiple copies of the same book.</li>
+  <li><strong>Console-only:</strong> The application has no graphical user interface.</li>
+</ul>
+
+<h3>10.3 Possible Enhancements</h3>
+<ul>
+  <li>Implement an AVL or Red-Black tree for guaranteed O(log n) performance.</li>
+  <li>Add password-based authentication for improved security.</li>
+  <li>Support multiple copies of the same book (copy counting).</li>
+  <li>Migrate to a database (e.g., SQLite) for better scalability.</li>
+  <li>Build a graphical or web-based user interface.</li>
+  <li>Add overdue notifications and fine calculations.</li>
+</ul>
+
+<!-- ================= 11. CONCLUSION ================= -->
+<h2><span class="section-num">11.</span> Conclusion</h2>
+
+<p>
+  The SmartLibrary project successfully demonstrates how fundamental data structures can be applied
+  to build a practical, working application. The <strong>Binary Search Tree</strong> provides efficient
+  ordered storage and retrieval of book records, while the <strong>linked-list stack</strong> naturally
+  organizes borrowing history in chronological order. The use of a Java interface
+  (<code>LibraryADT</code>) to abstract the library operations promotes clean separation between the
+  UI and business logic layers.
+</p>
+
+<p>
+  Through this project, the following data structure concepts were applied in practice:
+</p>
+
+<ul>
+  <li><strong>Binary Search Tree</strong> — insertion, search, deletion (with in-order successor), and in-order traversal</li>
+  <li><strong>Stack (LIFO)</strong> — push, linked-list traversal, and conversion to list</li>
+  <li><strong>Hash Map</strong> — constant-time key-based lookup for student history mapping</li>
+  <li><strong>Abstract Data Type</strong> — interface-based design for decoupling implementation from contract</li>
+</ul>
+
+<p>
+  The project meets all stated objectives: it provides a role-based library management system with
+  efficient book catalogue operations, chronological borrowing history, persistent data storage,
+  and a user-friendly console interface with comprehensive input validation.
+</p>
+
+<!-- ================= 12. REFERENCES ================= -->
+<h2><span class="section-num">12.</span> References</h2>
+
+<ol>
+  <li>Cormen, T.H., Leiserson, C.E., Rivest, R.L. and Stein, C. (2009). <em>Introduction to Algorithms</em>. 3rd ed. MIT Press.</li>
+  <li>Sedgewick, R. and Wayne, K. (2011). <em>Algorithms</em>. 4th ed. Addison-Wesley.</li>
+  <li>Bloch, J. (2018). <em>Effective Java</em>. 3rd ed. Addison-Wesley.</li>
+  <li>Oracle Corporation. <em>Java SE 17 API Documentation</em>. Available at: <code>https://docs.oracle.com/en/java/javase/17/docs/api/</code></li>
+</ol>
+
+<!-- ================= 13. APPENDICES ================= -->
+<div class="page-break"></div>
+<h2><span class="section-num">13.</span> Appendices</h2>
+
+<h3>Appendix A: LibraryADT Interface</h3>
+<pre><code>public interface LibraryADT {
+    boolean addBook(long isbn, String title, String author);
+    Book searchBook(long isbn);
+    LoanRecord borrowBook(String studentId, long isbn);
+    LoanRecord returnBook(String studentId, long isbn);
+    List&lt;LoanRecord&gt; viewBorrowHistory(String studentId);
+    List&lt;Book&gt; viewAvailableBooks();
+    boolean editBook(long isbn, String title, String author);
+    Book removeBook(long isbn);
+    List&lt;Book&gt; searchByTitleOrAuthor(String keyword);
+}</code></pre>
+
+<h3>Appendix B: BookBST Core Methods</h3>
+<pre><code>// Insert — O(log n) average
+public boolean insert(Book book) {
+    if (root == null) {
+        root = new Node(book);
+        return true;
+    }
+    return insertRecursive(root, book);
+}
+
+// Search — O(log n) average
+public Book search(long isbn) {
+    return searchRecursive(root, isbn);
+}
+
+// Delete — In-order successor strategy
+public boolean deleteByIsbn(long isbn) {
+    if (search(isbn) == null) return false;
+    root = deleteRecursive(root, isbn);
+    return true;
+}
+
+// Sorted retrieval — In-order traversal O(n)
+public List&lt;Book&gt; toList() {
+    List&lt;Book&gt; books = new ArrayList&lt;&gt;();
+    addBooksInOrder(root, books);
+    return books;
+}</code></pre>
+
+<h3>Appendix C: BorrowHistoryStack Core Methods</h3>
+<pre><code>// Push — O(1)
+public void push(LoanRecord loanRecord) {
+    top = new Node(loanRecord, top);
+}
+
+// Find active loan — O(n)
+public LoanRecord findActiveLoanByIsbn(long isbn) {
+    Node current = top;
+    while (current != null) {
+        LoanRecord lr = current.loanRecord;
+        if (!lr.isReturned() && lr.getBook().getIsbn() == isbn)
+            return lr;
+        current = current.next;
+    }
+    return null;
+}
+
+// Convert to list — O(n), maintains LIFO order
+public List&lt;LoanRecord&gt; toList() {
+    List&lt;LoanRecord&gt; records = new ArrayList&lt;&gt;();
+    Node current = top;
+    while (current != null) {
+        records.add(current.loanRecord);
+        current = current.next;
+    }
+    return records;
+}</code></pre>
+
+<div class="footer">
+  SmartLibrary Project Report &bull; Data Structures Course &bull; May 2026
+</div>
+
+</body>
+</html>
